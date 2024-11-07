@@ -18,8 +18,6 @@ from huggingface_hub import snapshot_download
 from base_model import BaseModel
 from base_model import STOP_SEQUENCES
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
-
 
 class StoppingCriteriaSub(StoppingCriteria):
     """Stop generations when they match a particular text or token."""
@@ -121,13 +119,12 @@ class HuggingfaceModel(BaseModel):
         if return_full:
             return full_answer
 
-        print("-----------------------------------")
+        #print("-----------------------------------")
 
         print(full_answer)
 
-        print("-----------------------------------")
+        #print("-----------------------------------")
 
-        # For some models, we need to remove the input_data from the answer.
         if full_answer.startswith(input_data):
             input_data_offset = len(input_data)
         else:
@@ -157,11 +154,6 @@ class HuggingfaceModel(BaseModel):
         # Remove whitespaces from answer (in particular from beginning.)
         sliced_answer = sliced_answer.strip()
 
-        # Get the number of tokens until the stop word comes up.
-        # Note: Indexing with `stop_at` already excludes the stop_token.
-        # Note: It's important we do this with full answer, since there might be
-        # non-trivial interactions between the input_data and generated part
-        # in tokenization (particularly around whitespaces.)
         token_stop_index = self.tokenizer(full_answer[:input_data_offset + stop_at], return_tensors="pt")['input_ids'].shape[1]
         n_input_token = len(inputs['input_ids'][0])
         n_generated = token_stop_index - n_input_token
