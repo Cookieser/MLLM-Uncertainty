@@ -1,4 +1,3 @@
-"""Implement HuggingfaceModel models."""
 import copy
 import logging
 from collections import Counter
@@ -17,7 +16,6 @@ from huggingface_hub import snapshot_download
 
 from base_model import BaseModel
 from base_model import STOP_SEQUENCES
-
 
 class StoppingCriteriaSub(StoppingCriteria):
     """Stop generations when they match a particular text or token."""
@@ -98,6 +96,7 @@ class HuggingfaceModel(BaseModel):
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
+                return_legacy_cache=False,
                 max_new_tokens=self.max_new_tokens,
                 return_dict_in_generate=True,
                 output_scores=True,
@@ -106,6 +105,7 @@ class HuggingfaceModel(BaseModel):
                 do_sample=True,
                 stopping_criteria=stopping_criteria,
                 pad_token_id=pad_token_id,
+                
             )
 
         if len(outputs.sequences[0]) > self.token_limit:
@@ -121,7 +121,7 @@ class HuggingfaceModel(BaseModel):
 
         #print("-----------------------------------")
 
-        print(full_answer)
+        #print(full_answer)
 
         #print("-----------------------------------")
 
@@ -183,4 +183,25 @@ class HuggingfaceModel(BaseModel):
 
         return sliced_answer,log_likelihoods
 
+    def get_p_true(self, input_data, answer="A"):
+
+        input_data += f" {answer}"
+        print(input_data)
+    
+        tokenized_prompt_true = self.tokenizer(
+            input_data, 
+            return_tensors='pt',
+            ).to('cuda')['input_ids']
+    
+        target_ids_true = tokenized_prompt_true.clone()
+    
+        answer_length = len(self.tokenizer(answer, return_tensors='pt')['input_ids'][0])
+
+        target_ids_true[0, :-answer_length] = -100
+
+        with torch.no_grad():
+            model_output_true = self.model(tokenized_prompt_true, labels=target_ids_true)
+
+        loss_true = model_output_true.loss
+        return -loss_true.item()
 

@@ -84,7 +84,7 @@ def load_ds(dataset_name, seed):
 
         reformat = lambda x: {
             'question': x['question'],
-            'choices': {'text': x['mc1_targets']['choices']},
+            'choices': x['mc1_targets']['choices'],
             'answers': {'text': x['mc1_targets']['labels']},
             'id': md5hash(str(x['question'])),
         }
@@ -100,7 +100,7 @@ def load_ds(dataset_name, seed):
 
         reformat = lambda x: {
             'question': x['question'],
-            'choices': {'text': x['mc2_targets']['choices']},
+            'choices': x['mc2_targets']['choices'],
             'answers': {'text': x['mc2_targets']['labels']},
             'id': md5hash(str(x['question'])),
         }

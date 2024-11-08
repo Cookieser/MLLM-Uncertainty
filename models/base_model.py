@@ -2,8 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Text
 
 
-STOP_SEQUENCES = ['\n\n\n\n', '\n\n\n', '\n\n','\n','Question:', 'Context:','USER:']
-
+STOP_SEQUENCES = ['\n\n\n\n', '\n\n\n', '\n\n','\n','Question:', 'Context:','USER:','TUTOR:','QUESTION:','ANSWER:','ASSISTANT:']
 
 class BaseModel(ABC):
 
@@ -11,4 +10,8 @@ class BaseModel(ABC):
 
     @abstractmethod
     def predict(self, input_data, temperature):
+        pass
+
+    @abstractmethod
+    def get_p_true(self, input_data):
         pass
