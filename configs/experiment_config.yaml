@@ -1,8 +1,0 @@
-experiment:
-  dataset: "path/to/dataset"
-  prompt_template: "standard_template"
-  sampling_method: "multi_sample"
-  sample_count: 5
-  metrics:
-    - "accuracy"
-    - "diversity"
