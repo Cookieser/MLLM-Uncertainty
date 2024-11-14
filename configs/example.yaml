@@ -6,9 +6,23 @@ experiment:
   seed: 42
 
 
+  #few-shot setting
   few-shot: False
-  prompt_template_path: "/home/yw699/codes/LLM-Hallu/data/prompt_templates/templates1.txt"
+  brief_always: True
+
+  add_tag: True
+  prompt_template_path: "/home/yw699/codes/LLM-Hallu/data/prompt_templates/test2.txt"
   
+
+
+
+
+
+
+  model_name: "meta-llama/Llama-2-7b-hf"
+  # None/"default"
+  stop_sequences: "default"
+  max_new_tokens: 50
   
   
   sampling_method: "multi_sample"

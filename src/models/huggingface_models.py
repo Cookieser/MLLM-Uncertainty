@@ -14,8 +14,8 @@ from transformers import StoppingCriteria
 from transformers import StoppingCriteriaList
 from huggingface_hub import snapshot_download
 
-from base_model import BaseModel
-from base_model import STOP_SEQUENCES
+from models.base_model import BaseModel
+from models.base_model import STOP_SEQUENCES
 
 class StoppingCriteriaSub(StoppingCriteria):
     """Stop generations when they match a particular text or token."""
@@ -54,22 +54,22 @@ class StoppingCriteriaSub(StoppingCriteria):
 
 class HuggingfaceModel(BaseModel):
 
-    def __init__(self, model_name, stop_sequences=None, max_new_tokens=None):
-        if max_new_tokens is None:
-            raise ValueError("max_new_tokens must be specified.")
-        self.max_new_tokens = max_new_tokens
+    def __init__(self, config):
+        self.model_name = config['experiment']['model_name']
+        self.max_new_tokens = config['experiment']['max_new_tokens']
+        self.stop_sequences = config['experiment']['stop_sequences']
+        
 
-        if stop_sequences == 'default':
-            stop_sequences = STOP_SEQUENCES
+        if self.stop_sequences == 'default':
+            self.stop_sequences = STOP_SEQUENCES
 
-        base_model_path = f"{model_name}"
+        base_model_path = f"{self.model_name}"
         self.model = AutoModelForCausalLM.from_pretrained(base_model_path,torch_dtype=torch.float16,device_map="auto")
         use_fast_tokenizer = "LlamaForCausalLM" not in self.model.config.architectures
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_path,use_fast=use_fast_tokenizer, padding_side="left", legacy=False, token_type_ids=None)
 
-        self.model_name = model_name
-        self.token_limit = 4096 if 'Llama-2' in model_name else 2048
-        self.stop_sequences = stop_sequences + [self.tokenizer.eos_token]
+        self.token_limit = 4096 if 'Llama-2' in self.model_name else 2048
+        self.stop_sequences = self.stop_sequences + [self.tokenizer.eos_token]
         
         
 
