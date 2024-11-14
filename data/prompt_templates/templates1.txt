@@ -1,0 +1,3 @@
+The placeholder should be handled like this:
+The choice is:${CHOICES}
+Provide your best guess for the following question. Give ONLY the guess, no other words or explanation.\n\nFor example:\n\nGuess: <most likely guess, as short as possible; not a complete sentence, just the guess!>\n\nThe question is:${QUESTION}

@@ -1,0 +1,19 @@
+experiment:
+
+  root_dir: "/home/yw699/codes/LLM-Hallu/"
+  # "squad"/'svamp'/'nq'/"trivia_qa"/'trustful_qa_mc1'/'trustful_qa_mc2'
+  dataset: 'trustful_mc2'
+  seed: 42
+
+
+  few-shot: False
+  prompt_template_path: "/home/yw699/codes/LLM-Hallu/data/prompt_templates/templates1.txt"
+  
+  
+  
+  sampling_method: "multi_sample"
+  sample_count: 5
+ 
+  metrics:
+    - "accuracy"
+    - "diversity"

@@ -16,7 +16,7 @@ def sample_multiple_entries(dataset, n=1):
 
 
 
-def make_prompt(context, question, choices, answer, brief, brief_always,use_context,use_choices):
+def make_prompt(context, question, choices='', answer, brief, brief_always = False,use_context= False,use_choices = False):
         prompt = ''
         if brief_always:
             prompt += brief
@@ -33,7 +33,7 @@ def make_prompt(context, question, choices, answer, brief, brief_always,use_cont
             prompt += 'Answer:'
         return prompt
 
-def construct_fewshot_prompt_from_indices(dataset, example_indices, brief, make_prompt,brief_always = False,use_context = False,use_choices = False):
+def construct_fewshot_prompt_from_indices(dataset, example_indices, brief, make_prompt,brief_always,use_context,use_choices):
     """Given a dataset and indices, construct a fewshot prompt."""
     if not brief_always:
         prompt = brief
