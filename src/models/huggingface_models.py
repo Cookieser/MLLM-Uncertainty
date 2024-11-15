@@ -14,8 +14,8 @@ from transformers import StoppingCriteria
 from transformers import StoppingCriteriaList
 from huggingface_hub import snapshot_download
 
-from models.base_model import BaseModel
-from models.base_model import STOP_SEQUENCES
+from .base_model import BaseModel
+from .base_model import STOP_SEQUENCES
 
 class StoppingCriteriaSub(StoppingCriteria):
     """Stop generations when they match a particular text or token."""
@@ -75,6 +75,8 @@ class HuggingfaceModel(BaseModel):
 
 
     def predict(self, input_data, temperature=1.0,device='cuda',return_full=False):
+
+        self.temperature = temperature
         inputs = self.tokenizer(input_data, return_tensors="pt").to(device)
 
         if 'llama' in self.model_name.lower() or 'falcon' in self.model_name or 'mistral' in self.model_name.lower():
