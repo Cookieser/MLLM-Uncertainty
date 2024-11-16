@@ -2,8 +2,8 @@ import hashlib
 import datasets
 class Dataset:
     def __init__(self, config):
-        self.dataset_name = config['experiment']['dataset']
-        self.seed = config['experiment']['seed']
+        self.dataset_name = config['dataset']['name']
+        self.seed = config['dataset']['seed']
 
         self.loaders = {
             "squad": self._load_squad,
@@ -79,6 +79,57 @@ class Dataset:
         }
         validation_dataset = [reformat(d) for d in dataset["validation"]]
         return None, validation_dataset  # No training set for this dataset
+
+
+    # def _load_bioasq(self):
+    #     # http://participants-area.bioasq.org/datasets/ we are using training 11b
+    #     # could also download from here https://zenodo.org/records/7655130
+    #     scratch_dir = os.getenv('SCRATCH_DIR', '.')
+    #     path = f"{scratch_dir}/{user}/semantic_uncertainty/data/bioasq/training11b.json"
+    #     with open(path, "rb") as file:
+    #         data = json.load(file)
+
+    #     questions = data["questions"]
+    #     dataset_dict = {
+    #         "question": [],
+    #         "answers": [],
+    #         "id": []
+    #     }
+
+    #     for question in questions:
+    #         if "exact_answer" not in question:
+    #             continue
+    #         dataset_dict["question"].append(question["body"])
+    #         if "exact_answer" in question:
+
+    #             if isinstance(question['exact_answer'], list):
+    #                 exact_answers = [
+    #                     ans[0] if isinstance(ans, list) else ans
+    #                     for ans in question['exact_answer']
+    #                 ]
+    #             else:
+    #                 exact_answers = [question['exact_answer']]
+
+    #             dataset_dict["answers"].append({
+    #                 "text": exact_answers,
+    #                 "answer_start": [0] * len(question["exact_answer"])
+    #             })
+    #         else:
+    #             dataset_dict["answers"].append({
+    #                 "text": question["ideal_answer"],
+    #                 "answer_start": [0]
+    #             })
+    #         dataset_dict["id"].append(question["id"])
+
+    #         dataset_dict["context"] = [None] * len(dataset_dict["id"])
+
+    #     dataset = datasets.Dataset.from_dict(dataset_dict)
+
+    #     # Split into training and validation set.
+    #     dataset = dataset.train_test_split(test_size=0.8, seed=seed)
+    #     train_dataset = dataset['train']
+    #     validation_dataset = dataset['test']
+    #     return train_dataset,validation_dataset
 
 
 

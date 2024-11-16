@@ -55,9 +55,9 @@ class StoppingCriteriaSub(StoppingCriteria):
 class HuggingfaceModel(BaseModel):
 
     def __init__(self, config):
-        self.model_name = config['experiment']['model_name']
-        self.max_new_tokens = config['experiment']['max_new_tokens']
-        self.stop_sequences = config['experiment']['stop_sequences']
+        self.model_name = config['model']['model_name']
+        self.max_new_tokens = config['model']['max_new_tokens']
+        self.stop_sequences = config['model']['stop_sequences']
         
 
         if self.stop_sequences == 'default':
@@ -76,7 +76,6 @@ class HuggingfaceModel(BaseModel):
 
     def predict(self, input_data, temperature=1.0,device='cuda',return_full=False):
 
-        self.temperature = temperature
         inputs = self.tokenizer(input_data, return_tensors="pt").to(device)
 
         if 'llama' in self.model_name.lower() or 'falcon' in self.model_name or 'mistral' in self.model_name.lower():
