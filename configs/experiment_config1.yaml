@@ -34,6 +34,12 @@ sample:
   
   
  
-  metrics:
-    - "accuracy"
-    - "diversity"
+metrics:
+  - name: "p_true"
+    p_true_num_fewshot: 2
+    
+  - name: "accuracy"
+  - name: "diversity"
+
+others:
+  get_training_set_generations: True

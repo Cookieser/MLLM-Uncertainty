@@ -1,1 +1,1 @@
-from .p_true import calculate_p_true
+from .p_true import *

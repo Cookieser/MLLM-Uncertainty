@@ -14,6 +14,7 @@ class PromptGenerator:
         self.prompt_template_path = config['prompt']['prompt_template_path']
         self.prompt_template = self._load_template(self.prompt_template_path)
         self.shots = config['prompt']['few-shot'] 
+        self.shot_num = config['prompt']['shot_num'] 
         self.add_tag = config['prompt']['add_tag']
         self.dataset_item = dataset_item
         self.unused_indices = set(range(len(dataset_item)))
@@ -129,17 +130,10 @@ class PromptGenerator:
         return tagged_prompt
     
 
-    
 
-    # 注意：unused_indices的变化，一部分被用来生产prompt，一部分用来生成shot
-    # 注意变量：是否重复提示词/few-shot number/prompt num  都是变量
-
-
-
-
-    def _make_prompt(self,context, question, answer, brief):
+    def _make_prompt(self,context, question, answer, brief,brief_always):
         prompt = ''
-        if self.brief_always:
+        if brief_always:
             prompt += brief
         if self.use_contexts and (context is not None):
             prompt += f"Context: {context}\n"
@@ -152,8 +146,9 @@ class PromptGenerator:
 
 
 
-    def construct_fewshot_prompt_from_indices(self, example_indices, brief= BRIEF_PROMPTS['default']):
+    def construct_fewshot_prompt_from_indices(self, brief= BRIEF_PROMPTS['default']):
         """Given a dataset and indices, construct a fewshot prompt."""
+        example_indices = random.sample(list(self.unused_indices), self.shot_num)
         if not self.brief_always:
             prompt = brief
         else:
@@ -170,7 +165,7 @@ class PromptGenerator:
             question = example["question"]
             answer = example["answers"]["text"][0]
 
-            prompt = prompt + self._make_prompt(context, question, answer, brief)
+            prompt = prompt + self._make_prompt(context, question, answer, brief,self.brief_always)
 
         self.unused_indices.difference_update(example_indices)
 

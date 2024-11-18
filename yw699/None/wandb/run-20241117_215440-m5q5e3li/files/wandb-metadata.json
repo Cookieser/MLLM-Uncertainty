@@ -1,0 +1,96 @@
+{
+  "os": "Linux-5.15.0-73-generic-x86_64-with-glibc2.35",
+  "python": "3.11.10",
+  "startedAt": "2024-11-18T02:54:40.692992Z",
+  "program": "/home/yw699/codes/LLM-Hallu/notebooks/semantic_uncertainty.ipynb",
+  "git": {
+    "remote": "https://github.com/Cookieser/LLM-Hallu.git",
+    "commit": "56cb1c944cd77418c916e4b7741f5a5aff394247"
+  },
+  "email": "324424398@qq.com",
+  "root": "./yw699/None",
+  "host": "zg70-cmp-01",
+  "username": "yw699",
+  "executable": "/home/yw699/anaconda3/envs/semantic_uncertainty/bin/python",
+  "codePathLocal": "notebooks/semantic_uncertainty.ipynb",
+  "cpu_count": 52,
+  "cpu_count_logical": 104,
+  "gpu": "Quadro RTX 6000",
+  "gpu_count": 10,
+  "disk": {
+    "/": {
+      "total": "210241560576",
+      "used": "65166757888"
+    }
+  },
+  "memory": {
+    "total": "404308037632"
+  },
+  "cpu": {
+    "count": 52,
+    "countLogical": 104
+  },
+  "gpu_nvidia": [
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    },
+    {
+      "name": "Quadro RTX 6000",
+      "memoryTotal": "25769803776",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    }
+  ],
+  "cudaVersion": "12.1"
+}
