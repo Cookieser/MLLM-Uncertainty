@@ -1,1 +1,1 @@
-from .p_true import *
+from .p_true import PTrueEvaluator

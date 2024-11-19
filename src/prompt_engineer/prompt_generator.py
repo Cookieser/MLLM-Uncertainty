@@ -20,6 +20,7 @@ class PromptGenerator:
         self.unused_indices = set(range(len(dataset_item)))
         self.brief_always = config['prompt']['brief_always'] 
         self.use_contexts = config['prompt']['use_context']
+        self.BRIEF = BRIEF_PROMPTS['default']
 
 
     def generate_template_prompt_by_id(self,id):
@@ -131,9 +132,9 @@ class PromptGenerator:
     
 
 
-    def _make_prompt(self,context, question, answer, brief,brief_always):
+    def _make_prompt(self,context, question, answer, brief):
         prompt = ''
-        if brief_always:
+        if self.brief_always:
             prompt += brief
         if self.use_contexts and (context is not None):
             prompt += f"Context: {context}\n"
@@ -146,11 +147,11 @@ class PromptGenerator:
 
 
 
-    def construct_fewshot_prompt_from_indices(self, brief= BRIEF_PROMPTS['default']):
+    def construct_fewshot_prompt_by_nums(self, shot_num):
         """Given a dataset and indices, construct a fewshot prompt."""
-        example_indices = random.sample(list(self.unused_indices), self.shot_num)
+        example_indices = random.sample(list(self.unused_indices),shot_num)
         if not self.brief_always:
-            prompt = brief
+            prompt = self.BRIEF
         else:
             prompt = ''
 
@@ -161,13 +162,14 @@ class PromptGenerator:
         for example_index in example_indices:
 
             example = self.dataset_item[example_index]
-            context = example["context"]
+            if self.use_contexts:
+                context = example["context"]
             question = example["question"]
             answer = example["answers"]["text"][0]
 
-            prompt = prompt + self._make_prompt(context, question, answer, brief,self.brief_always)
+            prompt = prompt + self._make_prompt(context, question, answer, self.BRIEF)
 
         self.unused_indices.difference_update(example_indices)
 
-        return prompt
+        return prompt,example_indices
    

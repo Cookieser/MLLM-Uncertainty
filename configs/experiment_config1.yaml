@@ -41,5 +41,11 @@ metrics:
   - name: "accuracy"
   - name: "diversity"
 
-others:
+
+p_true:
+  compute_p_true: True
   get_training_set_generations: True
+  get_training_set_generations_most_likely_only: True
+  compute_accuracy_at_all_temps: True
+  p_true_hint : False
+
