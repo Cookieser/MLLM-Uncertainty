@@ -2,11 +2,11 @@
 
 A framework to summarize metrics and ground truth implementations related to LLM hallucination, with experiment management powered by Weights & Biases (wandb).
 
-This framework modularizes and encapsulates various components (detailed below) to facilitate the addition of experimental metrics and streamline experimentation. It also simplifies the implementation of new methods and the measurement of specific data.
+This framework modularizes and encapsulates various components (detailed below) to facilitate the addition of experimental metrics and streamline experimentation. This will be helpful to build our system, and facilitate the follow-up comprehensive and extensive experiment.
 
 The framework builds upon an existing semantic entropy-based implementation, which provided inspiration and foundational concepts. However, the original code was focused on its specific methodology and lacked an overall modular design, leading to reduced readability and limited scalability.
 
-The following structure reflects the current design, but adjustments may be made as needed during implementation to achieve maximum modularity and decoupling. For example, module designs may evolve during the coding process.
+Take Care: The following structure reflects the current design, but adjustments may be made as needed during implementation to achieve maximum modularity and decoupling.
 
 
 
