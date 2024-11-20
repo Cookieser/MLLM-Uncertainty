@@ -120,11 +120,6 @@ class HuggingfaceModel(BaseModel):
         if return_full:
             return full_answer
 
-        #print("-----------------------------------")
-
-        #print(full_answer)
-
-        #print("-----------------------------------")
 
         if full_answer.startswith(input_data):
             input_data_offset = len(input_data)

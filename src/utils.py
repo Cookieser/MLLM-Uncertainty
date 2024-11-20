@@ -20,8 +20,8 @@ def save(object, file, save_dir=SAVE_DIR):
 
 def read(file, save_dir=SAVE_DIR):
     save_path = os.path.join(save_dir, file)
-    with open(save_path, "rb") as f:  # 以二进制读取模式打开文件
-        content = pickle.load(f)  # 使用 pickle 加载文件内容
+    with open(save_path, "rb") as f:  
+        content = pickle.load(f)  
     print(content)
 
 
