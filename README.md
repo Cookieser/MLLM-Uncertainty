@@ -66,10 +66,15 @@ LLM_Hallu/
 ## Completed Tasks
 
 ✅ Framework setup.
+
 ✅ Dataset module.
+
 ✅ Prompt engineering (few-shot methods).
+
 ✅ Model integration.
+
 ✅ Model answer generation.
+
 ✅ Overall `p_true` methodology, including few-shot design for `p_true`.
 
 
