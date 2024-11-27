@@ -63,3 +63,34 @@ def get_p_ik(train_embeddings, is_false, eval_embeddings=None, eval_is_false=Non
 
     # Return model predictions on the eval set.
     return y_preds_proba['eval'][:, 1]
+
+
+
+
+# if args.compute_p_ik or args.compute_p_ik_answerable:
+#     # Assemble training data for embedding classification.
+#     train_is_true, train_embeddings, train_answerable = [], [], []
+#     for tid in train_generations:
+#         most_likely_answer = train_generations[tid]['most_likely_answer']
+#         train_embeddings.append(most_likely_answer['embedding'])
+#         train_is_true.append(most_likely_answer['accuracy'])
+#         train_answerable.append(is_answerable(train_generations[tid]))
+#     train_is_false = [0.0 if is_t else 1.0 for is_t in train_is_true]
+#     train_unanswerable = [0.0 if is_t else 1.0 for is_t in train_answerable]
+#     logging.info('Unanswerable prop on p_ik training: %f', np.mean(train_unanswerable))
+
+# if args.compute_p_ik:
+#     logging.info('Starting training p_ik on train embeddings.')
+#     # Train classifier of correct/incorrect from embeddings.
+#     p_ik_predictions = get_p_ik(
+#         train_embeddings=train_embeddings, is_false=train_is_false,
+#         eval_embeddings=validation_embeddings, eval_is_false=validation_is_false)
+#     result_dict['uncertainty_measures']['p_ik'] = p_ik_predictions
+#     logging.info('Finished training p_ik on train embeddings.')
+
+# if args.compute_p_ik_answerable:
+#     # Train classifier of answerable/unanswerable.
+#     p_ik_predictions = get_p_ik(
+#         train_embeddings=train_embeddings, is_false=train_unanswerable,
+#         eval_embeddings=validation_embeddings, eval_is_false=validation_unanswerable)
+#     result_dict['uncertainty_measures']['p_ik_unanswerable'] = p_ik_predictions

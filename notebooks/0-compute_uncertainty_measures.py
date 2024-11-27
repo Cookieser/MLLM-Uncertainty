@@ -112,49 +112,6 @@ def main(args):
             raise ValueError
         logging.info('Entailment model loading complete.')
 
-    # if args.compute_p_true_in_compute_stage:
-    #     # This is usually not called.
-    #     old_exp = restore(EXP_DETAILS)
-    #     with open(old_exp.name, "rb") as infile:
-    #         old_exp = pickle.load(infile)
-
-    #     if args.reuse_entailment_model:
-    #         pt_model = entailment_model.model
-    #     else:
-    #         pt_model = utils.init_model(old_exp['args'])
-
-    #     pt_train_dataset, pt_validation_dataset = load_ds(
-    #         old_exp['args'].dataset, add_options=old_exp['args'].use_mc_options,
-    #         seed=args.random_seed)
-    #     del pt_validation_dataset
-
-    #     # Reduce num generations used in p_true if needed!
-    #     if not args.use_all_generations:
-    #         if args.use_num_generations == -1:
-    #             raise ValueError
-    #         num_gen = args.use_num_generations
-    #     else:
-    #         num_gen = args.num_generations
-
-    #     p_true_few_shot_prompt, p_true_responses, len_p_true = p_true_utils.construct_few_shot_prompt(
-    #         model=pt_model,
-    #         dataset=pt_train_dataset,
-    #         indices=old_exp['p_true_indices'],
-    #         prompt=old_exp['prompt'],
-    #         brief=old_exp['BRIEF'],
-    #         brief_always=old_exp['args'].brief_always and old_exp['args'].enable_brief,
-    #         make_prompt=utils.get_make_prompt(old_exp['args']),
-    #         num_generations=num_gen,
-    #         metric=utils.get_metric(old_exp['args'].metric))
-    #     del p_true_responses
-    #     wandb.config.update(
-    #         {'p_true_num_fewshot': len_p_true}, allow_val_change=True)
-    #     wandb.log(dict(len_p_true=len_p_true))
-
-    #     logging.info('Generated few-shot prompt for p_true.')
-    #     logging.info(80*'#')
-    #     logging.info('p_true_few_shot_prompt: %s', p_true_few_shot_prompt)
-    #     logging.info(80*'#')
 
     if args.recompute_accuracy:
         # This is usually not enabled.
@@ -270,13 +227,7 @@ def main(args):
         #     logging.info('High Temp Generation:')
         #     logging.info(log_str, semantic_ids, log_liks_agg, entropies_fmt)
 
-        # if args.compute_p_true_in_compute_stage:
-        #     p_true = p_true_utils.calculate_p_true(
-        #         pt_model, question, most_likely_answer['response'],
-        #         responses, p_true_few_shot_prompt,
-        #         hint=old_exp['args'].p_true_hint)
-        #     p_trues.append(p_true)
-        #     logging.info('p_true: %s', np.exp(p_true))
+
 
         count += 1
         if count >= args.num_eval_samples:
@@ -325,9 +276,6 @@ def main(args):
     #         eval_embeddings=validation_embeddings, eval_is_false=validation_unanswerable)
     #     result_dict['uncertainty_measures']['p_ik_unanswerable'] = p_ik_predictions
 
-    # if args.compute_p_true_in_compute_stage:
-    #     result_dict['uncertainty_measures']['p_false'] = [1 - p for p in p_trues]
-    #     result_dict['uncertainty_measures']['p_false_fixed'] = [1 - np.exp(p) for p in p_trues]
 
     utils.save(result_dict, 'uncertainty_measures.pkl')
 

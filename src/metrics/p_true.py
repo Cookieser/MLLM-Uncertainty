@@ -15,7 +15,7 @@ import os
 save_dir = "/home/yw699/codes/LLM-halu/results/"
 
 class PTrueEvaluator:
-    def __init__(self, config,model,train_promptgenerator, validation_promptgenerator,metric,experiment_details):
+    def __init__(self, config,model,train_promptgenerator, validation_promptgenerator,metric,experiment_details,results_dict):
         p_ture_config = config["p_true"]
         self.get_training_set_generations= p_ture_config["get_training_set_generations"]
         self.get_training_set_generations_most_likely_only = p_ture_config["get_training_set_generations_most_likely_only"]
@@ -27,6 +27,7 @@ class PTrueEvaluator:
         self.model =model
         self.metric = metric
         self.experiment_details = experiment_details
+        self.results_dict = results_dict
 
 
 
@@ -56,7 +57,7 @@ class PTrueEvaluator:
             logging.warning('Not enough samples in dataset. Using all %d samples.', len(unused_indices))
         indices = random.sample(unused_indices,min(num_samples, len(unused_indices)))
         self.experiment_details['train'] = {'indices': indices}
-        accuracies, generations, results_dict, p_trues = [], {}, {}, []
+        accuracies, generations, p_trues = [], {}, []
         for it, index in enumerate(tqdm(indices)):  
             if (it + 1) % 10 == 0:
                 gc.collect()
@@ -126,7 +127,7 @@ class PTrueEvaluator:
             logging.warning('Not enough samples in dataset. Using all %d samples.', len(unused_indices))
         indices = random.sample(unused_indices,min(num_samples, len(unused_indices)))
         self.experiment_details['validation'] = {'indices': indices}
-        accuracies, generations, results_dict, p_trues = [], {}, {}, []
+        accuracies, generations, p_trues = [], {}, []
         for it, index in enumerate(tqdm(indices)):  
             if (it + 1) % 10 == 0:
                 gc.collect()
@@ -194,12 +195,12 @@ class PTrueEvaluator:
         logging.info(f"Overall validation split accuracy: {accuracy}")
 
         if self.compute_p_true:
-            results_dict['uncertainty_measures'] = {
+            self.results_dict['uncertainty_measures'] = {
                 'p_false':  [1 - p for p in p_trues],
                 'p_false_fixed':  [1 - np.exp(p) for p in p_trues],
             }
-        self.save(results_dict, 'uncertainty_measures.pkl')
-        self.save_wandb(results_dict, 'uncertainty_measures.pkl')
+        self.save(self.results_dict, 'uncertainty_measures.pkl')
+        self.save_wandb(self.results_dict, 'uncertainty_measures.pkl')
 
 
 
@@ -287,7 +288,6 @@ class PTrueEvaluator:
                 logging.warning('Cutting of p_true prompt at length %d.', it)
                 break
 
-        p_true_indices = p_true_indices
         len_p_true = it
         p_true_responses = all_responses
         p_true_few_shot_prompt = ''.join(few_shot_prompt)

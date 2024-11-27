@@ -15,8 +15,8 @@ import torch.nn.functional as F
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from src.models.huggingface_models import HuggingfaceModel
-from src.utils import openai as oai
-from src.utils import base_utils as utils
+from src.metrics import openai as oai
+from src import utils as utils
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
