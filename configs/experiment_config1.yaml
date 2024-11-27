@@ -19,7 +19,7 @@ prompt:
   use_context: True
   # prompt
   add_tag: True
-  prompt_template_path: "/home/yw699/codes/LLM-Hallu/data/prompt_templates/ask_templates/test2.txt"
+  prompt_template_path: "./data/prompt_templates/ask_templates/test2.txt"
   
 
 model:

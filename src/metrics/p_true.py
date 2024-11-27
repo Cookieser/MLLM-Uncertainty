@@ -10,7 +10,9 @@ from tqdm import tqdm
 import wandb
 import pickle
 import numpy as np
+import os
 
+save_dir = "/home/yw699/codes/LLM-halu/results/"
 
 class PTrueEvaluator:
     def __init__(self, config,model,train_promptgenerator, validation_promptgenerator,metric,experiment_details):
@@ -108,6 +110,7 @@ class PTrueEvaluator:
                     full_responses.append((predicted_answer, token_log_likelihoods, acc))
             
             generations[example['id']]['responses'] = full_responses
+        self.save(generations, 'train_generations.pkl')
         self.save_wandb(generations, 'train_generations.pkl')
         accuracy = np.mean(accuracies)
         logging.info(f"Overall train split accuracy: {accuracy}")
@@ -186,7 +189,7 @@ class PTrueEvaluator:
                 logging.info('p_true: %s', p_true)
 
         self.save_wandb(generations, 'validation_generations.pkl')
-
+        self.save(generations, 'validation_generations.pkl')
         accuracy = np.mean(accuracies)
         logging.info(f"Overall validation split accuracy: {accuracy}")
 
@@ -195,6 +198,7 @@ class PTrueEvaluator:
                 'p_false':  [1 - p for p in p_trues],
                 'p_false_fixed':  [1 - np.exp(p) for p in p_trues],
             }
+        self.save(results_dict, 'uncertainty_measures.pkl')
         self.save_wandb(results_dict, 'uncertainty_measures.pkl')
 
 
@@ -202,6 +206,14 @@ class PTrueEvaluator:
 
     def construct_few_shot_prompt_for_p_true(self, prompt,num_generations,p_true_num_fewshot):
         """Construct few shot prompt for p_true uncertainty metric."""
+        logging.info(80*'#')
+        logging.info('Constructing few-shot prompt for p_true.')
+
+
+
+
+
+
         p_true_indices = random.sample(list(self.train_promptgenerator.unused_indices), p_true_num_fewshot)
 
         # Validate that all requested indices are in the unused set
@@ -275,7 +287,23 @@ class PTrueEvaluator:
                 logging.warning('Cutting of p_true prompt at length %d.', it)
                 break
 
-        return ''.join(few_shot_prompt), all_responses, it,p_true_indices
+        p_true_indices = p_true_indices
+        len_p_true = it
+        p_true_responses = all_responses
+        p_true_few_shot_prompt = ''.join(few_shot_prompt)
+
+        self.experiment_details['p_true_indices'] = p_true_indices
+        self.experiment_details['p_true_responses'] = p_true_responses
+        self.experiment_details['p_true_few_shot_prompt'] = p_true_few_shot_prompt
+
+
+        logging.info('Finished constructing few-shot prompt for p_true.')
+        logging.info(80*'#')
+        logging.info('p_true_few_shot_prompt: %s', p_true_few_shot_prompt)
+        logging.info(80*'#')
+
+
+        return p_true_few_shot_prompt
 
 
 
@@ -321,3 +349,10 @@ class PTrueEvaluator:
         with open(f'{wandb.run.dir}/{file}', 'wb') as f:
             pickle.dump(object, f)
         wandb.save(f'{wandb.run.dir}/{file}')
+
+
+    def save(self,object, file_name):
+        file = os.path.join(save_dir, file_name)
+        with open(file, 'wb') as f:
+            pickle.dump(object, f)
+        print(f"save this file in {file}")
