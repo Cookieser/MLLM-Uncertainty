@@ -56,7 +56,7 @@ def get_parser(stages=['generate', 'compute']):
             "--num_samples", type=int, default=4,
             help="Number of samples to use")
         parser.add_argument(
-            "--num_few_shot", type=int, default=5,
+            "--num_few_shot", type=int, default=2,
             help="Number of few shot examples to use")
         parser.add_argument(
             "--p_true_num_fewshot", type=int, default=2,
@@ -66,7 +66,7 @@ def get_parser(stages=['generate', 'compute']):
             action=argparse.BooleanOptionalAction,
             help="Get generations for training set?")
         parser.add_argument(
-            "--num_generations", type=int, default=10,
+            "--num_generations", type=int, default=1,
             help="Number of generations to use")
         parser.add_argument(
             "--temperature", type=float, default=1.0,

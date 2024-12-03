@@ -58,7 +58,7 @@ class MLLMModel(BaseModel):
 
 
         if "ASSISTANT:" in full_answer:
-            clean_answer = full_answer.split("ASSISTANT:")[1].strip()
+            clean_answer = full_answer.split("ASSISTANT:")[-1].strip()
         else:
             clean_answer = full_answer.strip() 
 
@@ -98,33 +98,12 @@ class MLLMModel(BaseModel):
 
         return clean_answer,clean_log_likelihoods,last_token_embedding
 
-    def get_p_true(self,question,image):
+    def get_p_true(self,few_shot_conversation,few_shot_images):
 
-        # Create the conversation template
-        conversation = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": question},
-                {"type": "image"},
-            ],
-        },
-        {
-            "role": "assistant",
-            "content": [
-                {"type": "text", "text": "A"},
-            ],
-        },
-        ]
-        prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=False)
-
-        def is_valid_url(url):
-            parsed = urlparse(url)
-            return bool(parsed.netloc) and bool(parsed.scheme)
+        prompt = self.processor.apply_chat_template(few_shot_conversation, add_generation_prompt=False)
 
 
-        
-        inputs = self.processor(images=image, text=prompt, return_tensors='pt')
+        inputs = self.processor(images=few_shot_images, text=prompt, return_tensors='pt')
         tokenized_prompt_true = inputs['input_ids']
 
         last_token_id = tokenized_prompt_true[0, -2].item()
@@ -277,7 +256,7 @@ class MLLMModel(BaseModel):
 
 
         if "ASSISTANT:" in full_answer:
-            clean_answer = full_answer.split("ASSISTANT:")[1].strip()
+            clean_answer = full_answer.split("ASSISTANT:")[-1].strip()
         else:
             clean_answer = full_answer.strip() 
 

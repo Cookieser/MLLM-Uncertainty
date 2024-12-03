@@ -55,6 +55,11 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
         image = Image.open(image_file).convert("RGB")
         images.append(image)
         options = example["options"]
+        answer = example['answers']['text']
+        if isinstance(answer, list):
+                answer = ", ".join(answer)  
+        elif not isinstance(answer, str):
+            raise ValueError(f"answer must be a string or list of strings, but got {type(answer)}")
 
 
         if it != 0:
@@ -77,8 +82,7 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
                 # Save most likely response and compute correctness metric for it.
                 most_likely_response = response
                 is_correct = True  ################
-                answers = [answer for answer in example['answers']['text']] #############
-                logging.info('P_TRUE >> LOW-T >> true answer: '.ljust(35) + str(answers))
+                logging.info('P_TRUE >> LOW-T >> true answer: '.ljust(35) + str(answer))
                 logging.info('P_TRUE >> LOW-T >> acc: '.ljust(35) + str(is_correct))
         all_responses[i] = dict(
             responses=responses, most_likely_response=most_likely_response,
@@ -89,12 +93,13 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
         prompt_candidate += ['A) True\n']
         prompt_candidate += ['B) False\n']
         prompt_candidate += ['The possible answer is:']
+        prompt_candidate_str = ''.join(prompt_candidate)
         mllm_answer = 'A' if is_correct else 'B'
         conversation.append( 
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": prompt_candidate},
+                    {"type": "text", "text": prompt_candidate_str},
                     {"type": "image"},  
                     
                 ],
@@ -111,8 +116,43 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
 
 
 
+def calculate_mllm_p_true(model,question,image,most_probable_answer, brainstormed_answers,few_shot_conversation,few_shot_images):
+    
+    prompt = ''
+    prompt += 'Question: ' + question
+    prompt += '\nBrainstormed Answers: '
+    for answer in brainstormed_answers + [most_probable_answer]:
+        prompt += answer.strip() + '\n'
+    prompt += 'Possible answer: ' + most_probable_answer + '\n'
+    prompt += 'Is the possible answer:\n'
+    prompt += 'A) True\n'
+    prompt += 'B) False\n'
+    prompt += 'The possible answer is:'
+    prompt += 'Do the brainstormed answers match the possible answer? Respond with A if they do, if they do not respond with B. Answer:'
 
-def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accuracies, generations,  p_trues):
+    few_shot_conversation.append( 
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image"},  
+                    
+                ],
+            })
+
+    few_shot_conversation.append(
+        {
+        "role": "assistant",
+        "content": [
+           {"type": "text", "text": "A"},
+            ],
+        })
+    few_shot_images.append(image)
+    log_prob = model.get_p_true(few_shot_conversation,few_shot_images)
+
+    return log_prob
+
+def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accuracies, generations,  p_trues,few_shot_conversation,few_shot_images):
     it = 0
     for index in tqdm(indices):
         if (it + 1 % 10) == 0:
@@ -130,6 +170,11 @@ def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accur
         image = Image.open(image_file).convert("RGB")
         options = example["options"]
         correct_answer =example['answers']['text']
+        if isinstance(correct_answer, list):
+                correct_answer = ", ".join(correct_answer)  
+        elif not isinstance(correct_answer, str):
+            raise ValueError(f"answer must be a string or list of strings, but got {type(correct_answer)}")
+
 
         generations[example['id']] = {'question': question, 'image_path': image_file}
 
@@ -195,11 +240,11 @@ def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accur
         # Append all predictions for this example to `generations`.
         generations[example['id']]['responses'] = full_responses
 
-        #if args.compute_p_true and dataset_split == 'validation':
+        if args.compute_p_true and dataset_split == 'validation':
             # Already compute p_true here. Avoid cost of generations in compute_uncertainty script.
-            #p_true = calculate_mllm_p_true
-            #p_trues.append(p_true)
-            #logging.info('p_true: %s', p_true)
+            p_true = calculate_mllm_p_true(model,question,image,most_likely_answer_dict['response'], [r[0] for r in full_responses],few_shot_conversation,few_shot_images)
+            p_trues.append(p_true)
+            logging.info('p_true: %s', p_true)
     return generations,accuracies 
 
 
@@ -264,7 +309,9 @@ def main(args):
         logging.info(80*'#')
 
 
-        # Start answer generation.
+    #ans,_,_ = model.predict_by_conversation(conversation,images,1, return_full=False)
+    #print(ans)
+    # Start answer generation.
     logging.info(80 * '=')
     logging.info('Generating answers: ')
     logging.info(80 * '=')
@@ -294,7 +341,7 @@ def main(args):
             logging.warning('Not enough samples in dataset. Using all %d samples.', len(dataset))
 
         #generations,accuracies,p_trues = generation_handler(args,dataset,dataset_split,indices,make_prompt,BRIEF,prompt,p_true_few_shot_prompt,model,metric,accuracies, generations, p_trues)
-        generations,accuracies = generation(args,dataset,dataset_split,indices,few_shot_info,model,metric,accuracies, generations,  p_trues)
+        generations,accuracies = generation(args,dataset,dataset_split,indices,few_shot_info,model,metric,accuracies, generations,  p_trues,conversation,images)
         # Save generations for that split.
         utils.save(generations, f'{dataset_split}_generations.pkl')
 
