@@ -49,14 +49,20 @@ def main(args):
 
 
     # Create Few-Shot prompt.
+
+    make_prompt = utils.get_make_prompt(args)
+    BRIEF = utils.BRIEF_PROMPTS[args.brief_prompt]
+    
+    experiment_details['BRIEF'] = BRIEF
+
     prompt_indices = random.sample(answerable_indices, args.num_few_shot)
     experiment_details['prompt_indices'] = prompt_indices
     remaining_answerable = list(set(answerable_indices) - set(prompt_indices))
 
-    make_prompt,prompt,BRIEF= few_shot_handler(args,train_dataset,prompt_indices)
     
+    prompt= few_shot_handler(args,make_prompt,BRIEF,train_dataset,prompt_indices)
     experiment_details['prompt'] = prompt
-    experiment_details['BRIEF'] = BRIEF
+    
     
     
     # Initialize model.

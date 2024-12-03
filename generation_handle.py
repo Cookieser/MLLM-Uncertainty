@@ -2,6 +2,7 @@ import logging
 from tqdm import tqdm
 from uncertainty.utils import utils
 from uncertainty.uncertainty_measures import p_true as p_true_utils
+# Sample Process: Use to sample many times in different t
 def generation_handler(args,dataset,dataset_split,indices,make_prompt,BRIEF,prompt,p_true_few_shot_prompt,model,metric,accuracies, generations,  p_trues):
     it = 0
     for index in tqdm(indices):

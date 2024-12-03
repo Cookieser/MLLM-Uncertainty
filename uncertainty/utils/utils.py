@@ -46,7 +46,7 @@ def get_parser(stages=['generate', 'compute']):
         )
         parser.add_argument(
             "--dataset", type=str, default="trivia_qa",
-            choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp'],
+            choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp','mmvp'],
             help="Dataset to use")
         parser.add_argument(
             "--ood_train_dataset", type=str, default=None,

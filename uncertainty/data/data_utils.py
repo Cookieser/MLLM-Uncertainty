@@ -3,7 +3,10 @@ import os
 import json
 import hashlib
 import datasets
+import pandas as pd
 
+base_image_path = "/work/images/images"
+original_image_path = "/work/images/images/mmvp"
 
 def load_ds(dataset_name, seed, add_options=None):
     """Load dataset."""
@@ -98,6 +101,42 @@ def load_ds(dataset_name, seed, add_options=None):
         dataset = dataset.train_test_split(test_size=0.8, seed=seed)
         train_dataset = dataset['train']
         validation_dataset = dataset['test']
+
+    elif dataset_name == 'mmvp':
+
+        def transformed_images_address(idx,base_path):
+        # Iterate through folders
+            image_paths = []
+
+            # Iterate through folders
+            for folder in os.listdir(base_path):
+                folder_path = os.path.join(base_path, folder)
+                if os.path.isdir(folder_path):
+                    image_path = os.path.join(folder_path, f"{idx}.png")
+                    if os.path.exists(image_path):
+
+                        image_paths.append(image_path)
+
+            # Print the total count
+            return image_paths
+
+
+        file_path = "/home/yw699/codes/MLLM-hallu/semantic_uncertainty/uncertainty/data/Questions.csv"  
+        dataset_dict = datasets.load_dataset('csv', data_files=file_path)
+        dataset = dataset_dict['train'] 
+        dataset = dataset.train_test_split(test_size=0.2, seed=42)
+        train_dataset = dataset['train']
+        validation_dataset = dataset['test']
+        reformat = lambda x: {
+            'id': x['Index'],
+            'question': x['Question'],
+            'options': x['Options'],
+            'answers': {'text': [x['Correct Answer']]},
+            'original_image':{'paths': os.path.join(original_image_path, f"{x['Index']}.jpg")},
+            'transformed_images': {'paths': transformed_images_address(x['Index'],base_image_path)},
+        }
+        train_dataset = [reformat(d) for d in train_dataset]
+        validation_dataset = [reformat(d) for d in validation_dataset]
 
     else:
         raise ValueError
