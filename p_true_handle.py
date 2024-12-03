@@ -9,3 +9,13 @@ def p_true_handler(args,model,train_dataset,p_true_indices,prompt,BRIEF,make_pro
         metric=metric)
 
     return p_true_few_shot_prompt, p_true_responses, len_p_true
+
+def p_true(args,model,train_dataset,p_true_indices,prompt_info,metric):
+
+    # image question, sample many times
+    model.p_true_predict
+
+    return p_true_few_shot_info,p_true_responses,len_p_true
+
+
+

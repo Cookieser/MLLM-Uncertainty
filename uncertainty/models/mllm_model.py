@@ -192,7 +192,6 @@ class MLLMModel(BaseModel):
         #pprint(conversation)    
 
         prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-        print(prompt)
 
         inputs = self.processor(images=images, text=prompt, return_tensors='pt')
         with torch.no_grad():
@@ -253,3 +252,70 @@ class MLLMModel(BaseModel):
             return full_answer
 
         return clean_answer,clean_log_likelihoods,last_token_embedding
+
+    def predict_by_conversation(self,conversation,image,temperature, return_full=False):
+        
+        prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+
+        inputs = self.processor(images=image, text=prompt, return_tensors='pt')
+        with torch.no_grad():
+            output = self.model.generate(
+                **inputs, 
+                max_new_tokens=self.max_new_tokens,
+                do_sample=True,
+                temperature=temperature,
+                return_dict_in_generate=True,
+                output_scores=True,
+                output_hidden_states=True,
+                )
+        full_answer = self.processor.decode(output.sequences[0], skip_special_tokens=True)
+        generated_tokens = output.sequences[0].tolist()
+
+        eos_token_id = self.processor.tokenizer.eos_token_id
+        eos_token = self.processor.tokenizer.decode([eos_token_id])
+
+
+
+        if "ASSISTANT:" in full_answer:
+            clean_answer = full_answer.split("ASSISTANT:")[1].strip()
+        else:
+            clean_answer = full_answer.strip() 
+
+        if clean_answer.endswith(eos_token):
+            clean_answer = clean_answer[: -len(eos_token)].strip()
+        
+        clean_answer_tokens = self.processor.tokenizer.encode(clean_answer, add_special_tokens=False)
+
+        hidden_states = output.hidden_states  # List of tensors for each layer
+
+        
+        if len(hidden_states) == 0:
+            logging.warning('Nothing happens! ')
+        elif (len(hidden_states) == 1):
+            logging.warning('Taking first and only generation for hidden! ')
+            last_input = hidden_states[0]
+        else:
+            last_input = hidden_states[-2]
+        
+        last_layer = last_input[-1]
+        last_token_embedding = last_layer[:, -1, :].cpu()
+        
+        
+        # Compute transition scores log-likelihoods
+        transition_scores = self.model.compute_transition_scores(
+            output.sequences, output.scores, normalize_logits=True
+        )
+        log_likelihoods = [score.item() for score in transition_scores[0]]
+
+        # Extract log-likelihoods matching clean_answer_tokens
+        clean_log_likelihoods = log_likelihoods[-len(clean_answer_tokens):]
+
+
+
+        if return_full:
+            return full_answer
+
+        return clean_answer,clean_log_likelihoods,last_token_embedding
+
+
+    

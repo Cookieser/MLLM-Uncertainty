@@ -87,3 +87,21 @@ def generation_handler(args,dataset,dataset_split,indices,make_prompt,BRIEF,prom
             p_trues.append(p_true)
             logging.info('p_true: %s', p_true)
     return generations,accuracies,p_trues
+
+
+
+
+
+
+
+            
+
+
+            
+
+
+        
+
+
+
+

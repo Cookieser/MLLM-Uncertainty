@@ -106,6 +106,7 @@ def main(args):
                 logging.info('Skip training data.')
                 continue
             dataset = train_dataset
+            ##########3.to do about unanswerable_indices
             possible_indices = list(set(remaining_answerable) | set(unanswerable_indices))
 
         else:
