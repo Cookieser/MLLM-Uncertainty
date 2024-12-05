@@ -120,7 +120,7 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
 
 def calculate_mllm_p_true(model,question,image,most_probable_answer, brainstormed_answers,few_shot_conversation,few_shot_images):
     conversation = copy.deepcopy(few_shot_conversation)
-    few_shot_images= copy.deepcopy(few_shot_conversation)
+    few_shot_images= copy.deepcopy(few_shot_images)
     prompt = ''
     prompt += 'Question: ' + question
     prompt += '\nBrainstormed Answers: '
@@ -270,6 +270,8 @@ def main(args):
     # Load dataset.
     train_dataset,validation_dataset,answerable_indices,unanswerable_indices = dataset_handler(args)
 
+
+    # Create Few-Shot prompt.
     prompt_indices = random.sample(answerable_indices, args.num_few_shot)
     experiment_details['prompt_indices'] = prompt_indices
 
@@ -278,7 +280,7 @@ def main(args):
     few_shot_info = few_shot(args, train_dataset, prompt_indices)
 
 
-
+    # Initialize model.
     model = MLLMModel('llava-1.5-7b-hf','default',50);
 
 
@@ -304,8 +306,7 @@ def main(args):
         logging.info(80*'#')
 
 
-    #ans,_,_ = model.predict_by_conversation(conversation,images,1, return_full=False)
-    #print(ans)
+
     # Start answer generation.
     logging.info(80 * '=')
     logging.info('Generating answers: ')

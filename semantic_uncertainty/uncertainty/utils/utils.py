@@ -53,13 +53,13 @@ def get_parser(stages=['generate', 'compute']):
             choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp'],
             help="Dataset to use to assemble few-shot prompt, p_true prompt, and train p_ik.")
         parser.add_argument(
-            "--num_samples", type=int, default=10,
+            "--num_samples", type=int, default=1,
             help="Number of samples to use")
         parser.add_argument(
             "--num_few_shot", type=int, default=5,
             help="Number of few shot examples to use")
         parser.add_argument(
-            "--p_true_num_fewshot", type=int, default=0,
+            "--p_true_num_fewshot", type=int, default=1,
             help="Number of few shot examples to use")
         parser.add_argument(
             "--p_true_hint", default=False,
