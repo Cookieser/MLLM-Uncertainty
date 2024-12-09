@@ -53,7 +53,7 @@ def get_parser(stages=['generate', 'compute']):
             choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp'],
             help="Dataset to use to assemble few-shot prompt, p_true prompt, and train p_ik.")
         parser.add_argument(
-            "--num_samples", type=int, default=1,
+            "--num_samples", type=int, default=130,
             help="Number of samples to use")
         parser.add_argument(
             "--num_few_shot", type=int, default=5,
@@ -66,7 +66,7 @@ def get_parser(stages=['generate', 'compute']):
             action=argparse.BooleanOptionalAction,
             help="Get generations for training set?")
         parser.add_argument(
-            "--num_generations", type=int, default=10,
+            "--num_generations", type=int, default=20,
             help="Number of generations to use")
         parser.add_argument(
             "--temperature", type=float, default=1.0,

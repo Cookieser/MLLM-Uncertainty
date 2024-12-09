@@ -300,5 +300,5 @@ if __name__ == '__main__':
         torch.cuda.empty_cache()
         logging.info(50 * '#X')
         logging.info('STARTING `compute_uncertainty_measures`!')
-        #main_compute(args)
+        main_compute(args)
         logging.info('FINISHED `compute_uncertainty_measures`!')
