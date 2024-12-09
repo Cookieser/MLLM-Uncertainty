@@ -71,6 +71,13 @@ LLM_Hallu/
 
 ## Demo
 
+Change the image path in `semantic_uncertainty/data/data_utils`
+```
+base_image_path = "/work/images/images"
+original_image_path = "/work/images/images/mmvp"
+file_path = "/home/yw699/codes/MLLM-hallu/semantic_uncertainty/uncertainty/data/Questions.csv" 
+```
+
 ```
 conda-env update -f environment.yaml
 conda activate semantic_uncertainty
