@@ -1,4 +1,4 @@
-# LLM Hallucination 
+# MLLM-Uncertainty
 
 A framework to summarize metrics and ground truth implementations related to LLM hallucination, with experiment management powered by Weights & Biases (wandb).
 
