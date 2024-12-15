@@ -16,6 +16,7 @@ from uncertainty.data.data_utils import load_ds
 from uncertainty.utils import utils
 from uncertainty.uncertainty_measures import p_true as p_true_utils
 from compute_uncertainty_measures import main as main_compute
+from uncertainty.accuracy_metric.metrics import *
 
 utils.setup_logger()
 
@@ -251,7 +252,7 @@ def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accur
                     'accuracy': acc}
                 generations[example['id']].update({
                     'most_likely_answer': most_likely_answer_dict,
-                    'reference': utils.get_reference(example)})
+                    'reference': get_reference(example)})
                 
             else:
                 logging.info('high-t prediction '.ljust(15) + str(i) + ' : ' + predicted_answer)
@@ -294,7 +295,7 @@ def main(args):
     logging.info('Finished wandb init.')
 
     # Get accuracy metric.
-    metric = utils.get_metric('mc')
+    metric = get_metric('mc')
     # Load dataset.
     train_dataset,validation_dataset,answerable_indices,unanswerable_indices = dataset_handler(args)
 

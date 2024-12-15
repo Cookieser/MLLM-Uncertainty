@@ -53,10 +53,10 @@ def get_parser(stages=['generate', 'compute']):
             choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp'],
             help="Dataset to use to assemble few-shot prompt, p_true prompt, and train p_ik.")
         parser.add_argument(
-            "--num_samples", type=int, default=130,
+            "--num_samples", type=int, default=3,
             help="Number of samples to use")
         parser.add_argument(
-            "--num_few_shot", type=int, default=5,
+            "--num_few_shot", type=int, default=2,
             help="Number of few shot examples to use")
         parser.add_argument(
             "--p_true_num_fewshot", type=int, default=1,
@@ -66,7 +66,7 @@ def get_parser(stages=['generate', 'compute']):
             action=argparse.BooleanOptionalAction,
             help="Get generations for training set?")
         parser.add_argument(
-            "--num_generations", type=int, default=20,
+            "--num_generations", type=int, default=2,
             help="Number of generations to use")
         parser.add_argument(
             "--temperature", type=float, default=1.0,
@@ -195,82 +195,6 @@ def split_dataset(dataset):
     return answerable_indices, unanswerable_indices
 
 
-def model_based_metric(predicted_answer, example, model):
-    if 'answers' in example:
-        correct_answers = example['answers']['text']
-    elif 'reference' in example:
-        correct_answers = example['reference']['answers']['text']
-    else:
-        raise ValueError
-
-    prompt = f'We are assessing the quality of answers to the following question: {example["question"]}\n'
-    if len(correct_answers) == 1:
-        prompt += f"The expected answer is: {correct_answers[0]}.\n"
-    else:
-        prompt += f"The following are expected answers to this question: {correct_answers}.\n"
-
-    prompt += f"The proposed answer is: {predicted_answer}\n"
-
-    if len(correct_answers) == 1:
-        prompt += "Within the context of the question, does the proposed answer mean the same as the expected answer?"
-    else:
-        prompt += "Within the context of the question, does the proposed answer mean the same as any of the expected answers?"
-
-    prompt += " Respond only with yes or no.\nResponse:"
-
-    if 'gpt' in model.model_name.lower():
-        predicted_answer = model.predict(prompt, 0.01)
-    else:
-        predicted_answer, _, _ = model.predict(prompt, 0.01)
-
-    if 'yes' in predicted_answer.lower():
-        return 1.0
-    elif 'no' in predicted_answer.lower():
-        return 0.0
-    else:
-        logging.warning('Redo llm check.')
-        predicted_answer, _, _ = model.predict(prompt, 1)
-        if 'yes' in predicted_answer.lower():
-            return 1.0
-        elif 'no' in predicted_answer.lower():
-            return 0.0
-
-        logging.warning('Answer neither no nor yes. Defaulting to no!')
-        return 0.0
-
-
-def llm_metric(predicted_answer, example, model):
-    return model_based_metric(predicted_answer, example, model)
-
-
-def get_gpt_metric(metric_name):
-
-    model_name = '_'.join(metric_name.split('_')[1:])
-
-    class EntailmentGPT():
-        def __init__(self, model_name):
-            self.model_name = model_name
-
-        def predict(self, prompt, temperature):
-            return oai.predict(prompt, temperature, model=self.model_name)
-
-    gpt_model = EntailmentGPT(model_name)
-
-    def gpt_metric(predicted_answer, example, model):
-        del model
-        return model_based_metric(predicted_answer, example, gpt_model)
-
-    return gpt_metric
-
-
-def get_reference(example):
-    if 'answers' not in example:
-        example = example['reference']
-    answers = example['answers']
-    answer_starts = answers.get('answer_start', [])
-    reference = {'answers': {'answer_start': answer_starts, 'text': answers['text']}, 'id': example['id']}
-    return reference
-
 
 def init_model(args):
     mn = args.model_name
@@ -301,67 +225,6 @@ def get_make_prompt(args):
         raise ValueError
 
     return make_prompt
-
-
-def get_metric(metric):
-    if metric == 'squad':
-
-        squad_metric = load("squad_v2")
-
-        def metric(response, example, *args, **kwargs):
-            # Compatibility with recomputation.
-            if 'id' in example:
-                exid = example['id']
-            elif 'id' in example['reference']:
-                exid = example['reference']['id']
-            else:
-                raise ValueError
-
-            prediction = {'prediction_text': response, 'no_answer_probability': 0.0, 'id': exid}
-            results = squad_metric.compute(
-                predictions=[prediction],
-                references=[get_reference(example)])
-            return 1.0 if (results['f1'] >= 50.0) else 0.0
-    elif metric == 'mc':
-        def extract_option(response):
-            """
-            Supposed format: 'a.', 'a)', '(a)', 'A.', 'B)', 'A', 'A' A-D
-
-            Args:
-                response (str): 模型生成的回答。
-
-            Returns:
-                str or None: lower choice,like 'a'; no legel None
-            """
-            match = re.search(r'(?<!\w)([a-dA-D])(?![\w])|(?<!\w)\(?([a-dA-D])[\.\)]', response.strip())
-            if match:
-                return (match.group(1) or match.group(2)).lower() 
-            return None  
-        def metric(response, example, *args, **kwargs):
-            # Compatibility with recomputation.
-            if 'id' in example:
-                exid = example['id']
-            elif 'id' in example['reference']:
-                exid = example['reference']['id']
-            else:
-                raise ValueError
-            predicted_option = extract_option(response)
-            correct_option = example['answers']['text'].strip("()").lower()
-            if predicted_option is None:
-                return 0.0
-            return 1.0 if predicted_option == correct_option else 0.0
-
-    # Reuses the globally active model for these.
-    elif metric == 'llm':
-        metric = llm_metric
-    elif metric == 'llm_gpt-3.5':
-        metric = get_gpt_metric(metric)
-    elif metric == 'llm_gpt-4':
-        metric = get_gpt_metric(metric)
-    else:
-        raise ValueError
-
-    return metric
 
 
 def save(object, file):

@@ -24,6 +24,7 @@ Take Care: The following structure reflects the current design, but adjustments 
 
 ### Features
 
+- **YAML configuration files** to store experimental parameters.
 - **wandb integration** for experiment tracking and simple data visualization.
 
 
@@ -35,58 +36,29 @@ Current directory structure:
 ```
 LLM_Hallu/
 │
-├── environment_export.yaml
-├── environment.yaml
-├── LICENSE
-├── notebooks
-│   ├── example_evaluation.ipynb
-├── README.md
-└── semantic_uncertainty
-    ├── analyze_results.py
-    ├── compute_uncertainty_measures.py
-    ├── generate_answers_llm.py
-    ├── generate_answers_mllm_plus.py
-    ├── generate_answers_mllm.py
-    ├── uncertainty
-    │   ├── data
-    │   │   ├── data_utils.py
-    │   │   └── Questions.csv
-    │   ├── __init__.py
-    │   ├── models
-    │   │   ├── base_model.py
-    │   │   ├── huggingface_models.py
-    │   │   ├── __init__.py
-    │   │   ├── mllm_model.py
-    │   ├── uncertainty_measures
-    │   │   ├── p_ik.py
-    │   │   ├── p_true.py
-    │   │   └── semantic_entropy.py
-    │   └── utils
-    │       ├── eval_utils.py
-    │       ├── openai.py
-    └──     └── utils.py
-```
-
-
-
-## Demo
-
-Change the image path in `semantic_uncertainty/data/data_utils`
-```
-base_image_path = "/work/images/images"
-original_image_path = "/work/images/images/mmvp"
-file_path = "/home/yw699/codes/MLLM-hallu/semantic_uncertainty/uncertainty/data/Questions.csv" 
-```
-
-```
-conda-env update -f environment.yaml
-conda activate semantic_uncertainty
-```
-
-```
-python semantic_uncertainty/generate_answers_llm.py --model_name=Llama-2-7b-chat --dataset=trivia_qa
-python semantic_uncertainty/generate_answers_mllm.py --dataset=mmvp
-python semantic_uncertainty/generate_answers_mllm_plus.py --dataset=mmvp
+├── configs/
+│   └── experiment_config1.yaml       # Experiment configuration files
+│
+├── data/
+│   └── prompt_templates/             
+│       └── ask_templates             
+│
+├── src/
+│   ├── dataset/                      # Dataset loading and processing
+│   ├── prompt_engineer/              # Prompt engineering
+│   ├── models/                       # Model-related code
+│   ├── metrics/                      # Metrics computation
+│   ├── uncertainty_measures/         # Uncertainty measures
+│   └── utils.py                      # Utility functions (e.g., config loading, logging)
+│
+├── logs/                             # Experiment logs
+│
+├── results/                          # Experiment results
+│
+├── notebooks/                        # Jupyter Notebooks for data analysis and debugging
+│
+├── README.md                         # Project documentation
+└── requirements.txt                  # Python dependencies
 ```
 
 
@@ -95,55 +67,31 @@ python semantic_uncertainty/generate_answers_mllm_plus.py --dataset=mmvp
 
 ✅ Framework setup.
 
-✅ LLM: Dataset module.
+✅ Dataset module.
 
-✅ LLM: Prompt engineering (few-shot methods).
+✅ Prompt engineering (few-shot methods).
 
-✅ LLM: Model integration.
+✅ Model integration.
 
-✅ LLM: Model answer generation.
+✅ Model answer generation.
 
-✅ LLM: Overall `p_true` methodology, including few-shot design for `p_true`.
-
-✅ MLLM: Add MLLM
-
-✅MLLM: Finish the metric of the accuracy
-
-✅ MLLM: Handle with MMVP dataset
-
-✅ MLLM: Finish MLLM few-shot 
-
-✅ MLLM: Finish MLLM  `p_true` method, including few-shot design for `p_true`.
-
-✅ MLLM: Finish MLLM  generation method
-
-✅ MLLM: Finish MLLM  generation plus method through our transformed images
+✅ Overall `p_true` methodology, including few-shot design for `p_true`.
 
 
 
-## To do
+## Todo List
 
-- README
-- polish the structure and encapsulate various components
-- add some dataset 
-- add some models
-- do many expriments
-- add some method: RepE
+- Encapsulate the sample class.
+- Compile and implement common metrics for LLM hallucination.
+- Implement semantic entropy calculations.
+- Develop the Aggregator class.
+
 
 ## Ground Truth/confidence
-
 - Semantic Entropy
 https://arxiv.org/abs/2302.09664 https://www.nature.com/articles/s41586-024-07421-0
 
 Use the Semantic Entropy to measure the confidence of llm output
-
-
-
-
-
-
-
-
 
 
 

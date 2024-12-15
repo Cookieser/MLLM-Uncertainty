@@ -23,6 +23,8 @@ from uncertainty.uncertainty_measures.semantic_entropy import EntailmentLlama
 from uncertainty.uncertainty_measures import p_true as p_true_utils
 from uncertainty.utils import utils
 
+from uncertainty.accuracy_metric.metrics import *
+
 
 utils.setup_logger()
 
@@ -145,7 +147,7 @@ def main(args):
             brief_always=old_exp['args'].brief_always and old_exp['args'].enable_brief,
             make_prompt=utils.get_make_prompt(old_exp['args']),
             num_generations=num_gen,
-            metric=utils.get_metric(old_exp['args'].metric))
+            metric=get_metric(old_exp['args'].metric))
         del p_true_responses
         wandb.config.update(
             {'p_true_num_fewshot': len_p_true}, allow_val_change=True)
@@ -159,7 +161,7 @@ def main(args):
     if args.recompute_accuracy:
         # This is usually not enabled.
         logging.warning('Recompute accuracy enabled. This does not apply to precomputed p_true!')
-        metric = utils.get_metric(args.metric)
+        metric = get_metric(args.metric)
 
     # Restore outputs from `generate_answrs.py` run.
     result_dict_pickle = restore('uncertainty_measures.pkl')

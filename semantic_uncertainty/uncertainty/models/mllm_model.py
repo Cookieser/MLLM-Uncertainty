@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from pprint import pprint
 import torch.nn.functional as F
 import os 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
+
 class MLLMModel(BaseModel):
     def __init__(self, model_name, stop_sequences=None, max_new_tokens=None):
         if max_new_tokens is None:
