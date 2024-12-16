@@ -46,7 +46,7 @@ def get_parser(stages=['generate', 'compute']):
         )
         parser.add_argument(
             "--dataset", type=str, default="trivia_qa",
-            choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp','mmvp'],
+            choices=['trivia_qa', 'squad', 'bioasq', 'nq', 'svamp','mmvp','vqa'],
             help="Dataset to use")
         parser.add_argument(
             "--ood_train_dataset", type=str, default=None,
@@ -56,10 +56,10 @@ def get_parser(stages=['generate', 'compute']):
             "--num_samples", type=int, default=3,
             help="Number of samples to use")
         parser.add_argument(
-            "--num_few_shot", type=int, default=2,
+            "--num_few_shot", type=int, default=3,
             help="Number of few shot examples to use")
         parser.add_argument(
-            "--p_true_num_fewshot", type=int, default=1,
+            "--p_true_num_fewshot", type=int, default=3,
             help="Number of few shot examples to use")
         parser.add_argument(
             "--p_true_hint", default=False,
@@ -72,7 +72,7 @@ def get_parser(stages=['generate', 'compute']):
             "--temperature", type=float, default=1.0,
             help="Temperature")
         parser.add_argument(
-            "--use_mc_options", type=bool, default=True,
+            "--use_mc_options", type=bool, default=False,
             help="Include MC options question?")
         parser.add_argument(
             "--get_training_set_generations", default=True,
@@ -106,6 +106,8 @@ def get_parser(stages=['generate', 'compute']):
             "--answerable_only", default=False,
             action=argparse.BooleanOptionalAction,
             help='Exclude unanswerable questions.')
+        
+
 
     if 'compute' in stages:
         parser.add_argument('--recompute_accuracy',

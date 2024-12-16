@@ -4,13 +4,18 @@ import json
 import hashlib
 import datasets
 import pandas as pd
+from tqdm import tqdm
 
-base_image_path = "/work/images/images"
-original_image_path = "/work/images/images/mmvp"
-file_path = "/home/yw699/codes/MLLM-hallu/semantic_uncertainty/uncertainty/data/Questions.csv" 
+mmvp_image_path = "/work/images/images"
+mmvp_original_image_path = "/work/images/images/mmvp"
+mmvp_dataset_path = "semantic_uncertainty/uncertainty/data/Questions.csv" 
+
+VQA_dataset_path = "semantic_uncertainty/uncertainty/data/VQAv2_dataset.json"
+VQA_original_image_path = "/work/images/VQAv2/VQAv2_train2014"
+
 
 def load_ds(dataset_name, seed, add_options=None):
-    """Load dataset."""
+
     user = os.environ['USER']
 
     train_dataset, validation_dataset = None, None
@@ -123,8 +128,8 @@ def load_ds(dataset_name, seed, add_options=None):
 
 
         
-        dataset_dict = datasets.load_dataset('csv', data_files=file_path)
-        dataset = dataset_dict['train'] 
+        dataset_dict = datasets.load_dataset('csv', data_files=mmvp_dataset_path)
+        dataset = dataset_dict['train']
         dataset = dataset.train_test_split(test_size=0.5, seed=42)
         train_dataset = dataset['train']
         validation_dataset = dataset['test']
@@ -133,11 +138,39 @@ def load_ds(dataset_name, seed, add_options=None):
             'question': x['Question'],
             'options': x['Options'],
             'answers': {'text': x['Correct Answer']},
-            'original_image':{'paths': os.path.join(original_image_path, f"{x['Index']}.jpg")},
-            'transformed_images': {'paths': transformed_images_address(x['Index'],base_image_path)},
+            'original_image':{'paths': os.path.join(mmvp_original_image_path, f"{x['Index']}.jpg")},
+            'transformed_images': {'paths': transformed_images_address(x['Index'],mmvp_image_path)},
         }
         train_dataset = [reformat(d) for d in train_dataset]
         validation_dataset = [reformat(d) for d in validation_dataset]
+
+    elif dataset_name == 'vqa':
+        dataset_dict = datasets.load_dataset("json", data_files=VQA_dataset_path)
+        dataset = dataset_dict['train'] 
+        dataset = dataset.select(range(400))
+        dataset = dataset.train_test_split(test_size=0.5, seed=42)
+        train_dataset = dataset['train']
+        validation_dataset = dataset['test']
+
+        reformat = lambda x: {
+            'id': x['question_id'],
+            'question': x['question'],
+            'answers': {'text': x['answers']},
+            'original_image':{'paths': os.path.join(VQA_original_image_path, f"COCO_train2014_{str(x['image_id']).zfill(12)}.jpg"),
+            #'transformed_images': {'paths': transformed_images_address(x['Index'],base_image_path)
+            },
+        }
+
+        print("Processing training dataset...")
+        train_dataset = [reformat(d) for d in tqdm(train_dataset, desc="Reformatting Train Dataset")]
+
+        print("Processing validation dataset...")
+        validation_dataset = [reformat(d) for d in tqdm(validation_dataset, desc="Reformatting Validation Dataset")]
+
+        #train_dataset = [reformat(d) for d in train_dataset]
+        #validation_dataset = [reformat(d) for d in validation_dataset]
+
+
 
     else:
         raise ValueError

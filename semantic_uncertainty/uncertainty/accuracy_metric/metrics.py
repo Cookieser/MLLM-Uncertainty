@@ -10,6 +10,7 @@ from evaluate import load
 
 from uncertainty.models.huggingface_models import HuggingfaceModel
 from uncertainty.utils import openai as oai
+from uncertainty.accuracy_metric.vqa_eval import VQAEval
 
 def get_metric(metric):
     if metric == 'squad':
@@ -32,15 +33,6 @@ def get_metric(metric):
             return 1.0 if (results['f1'] >= 50.0) else 0.0
     elif metric == 'mc':
         def extract_option(response):
-            """
-            Supposed format: 'a.', 'a)', '(a)', 'A.', 'B)', 'A', 'A' A-D
-
-            Args:
-                response (str): 模型生成的回答。
-
-            Returns:
-                str or None: lower choice,like 'a'; no legel None
-            """
             match = re.search(r'(?<!\w)([a-dA-D])(?![\w])|(?<!\w)\(?([a-dA-D])[\.\)]', response.strip())
             if match:
                 return (match.group(1) or match.group(2)).lower() 
@@ -66,6 +58,22 @@ def get_metric(metric):
         metric = get_gpt_metric(metric)
     elif metric == 'llm_gpt-4':
         metric = get_gpt_metric(metric)
+
+    elif metric =="vqa":
+        vqa = VQAEval()
+
+        def metric(response, example, *args, **kwargs):
+            if 'id' in example:
+                exid = example['id']
+            else:
+                raise ValueError
+
+            ground_truths = example['answers']['text']
+            acc = vqa.evaluate(ground_truths,response)
+
+            return 1.0 if acc > 0.5 else 0.0
+
+    
     else:
         raise ValueError
 

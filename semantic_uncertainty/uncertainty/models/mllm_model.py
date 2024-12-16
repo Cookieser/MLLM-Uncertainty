@@ -161,10 +161,12 @@ class MLLMModel(BaseModel):
         few_shot_answers = few_shot_info.get("answers", [])
         few_shot_options = few_shot_info.get("options", [])
 
+        few_shot_options = [" "] * len(few_shot_questions) if not few_shot_options else few_shot_options
+
         conversation = []
        
 
-        for fs_question, fs_option, fs_answers in zip(few_shot_questions, few_shot_options, few_shot_answers):
+        for fs_question, fs_option, fs_answers in zip(few_shot_questions,few_shot_options, few_shot_answers):
             #print(f"Original fs_answers: {fs_answers}, Type: {type(fs_answers)}")
             if isinstance(fs_answers, list):
                 fs_answers = ", ".join(fs_answers)  
@@ -189,7 +191,7 @@ class MLLMModel(BaseModel):
                     ],
             })
     
-
+        options = " " if not options else options
 
         # Add the current question and image
         conversation.append( {
@@ -207,6 +209,18 @@ class MLLMModel(BaseModel):
         #pprint(conversation)    
 
         prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+
+
+        few_shot_images_count = len(few_shot_images)
+
+
+        prompt_images_num = len(few_shot_questions) + 1
+
+
+        assert few_shot_images_count + 1 == prompt_images_num, (
+    f"Inconsistent counts: Number of images ({few_shot_images_count + 1}) "
+    f"does not match number of prompt images ({prompt_images_num})."
+)
 
         inputs = self.processor(images=images, text=prompt, return_tensors='pt')
         with torch.no_grad():

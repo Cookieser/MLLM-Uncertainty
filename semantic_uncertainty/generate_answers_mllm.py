@@ -68,8 +68,16 @@ def few_shot(args, train_dataset, prompt_indices):
         image = Image.open(image_path).convert("RGB")
         prompt["images"].append(image)
         prompt["questions"].append(train_dataset[idx]["question"])
-        prompt["answers"].append(train_dataset[idx]["answers"]['text'])
-        prompt['options'].append(train_dataset[idx]["options"])
+
+        answer_data = train_dataset[idx]["answers"]['text']
+        if isinstance(answer_data, list) and len(answer_data) > 0:
+            selected_answer = random.choice(answer_data)
+        else:
+            selected_answer = answer_data
+        
+        prompt["answers"].append(selected_answer)
+        if (args.use_mc_options):
+            prompt['options'].append(train_dataset[idx]["options"])
     
     return prompt
 
@@ -85,7 +93,10 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
         image_file = example["original_image"]['paths']
         image = Image.open(image_file).convert("RGB")
         images.append(image)
-        options = example["options"]
+        if (args.use_mc_options):
+            options = example["options"]
+        else:
+            options = []
         answer = example['answers']['text']
         if isinstance(answer, list):
                 answer = ", ".join(answer)  
@@ -193,7 +204,11 @@ def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accur
         question = example["question"]
         image_file = example["original_image"]['paths']
         image = Image.open(image_file).convert("RGB")
-        options = example["options"]
+
+        if (args.use_mc_options):
+            options = example["options"]
+        else:
+            options = []
         correct_answer =example['answers']['text']
         if isinstance(correct_answer, list):
                 correct_answer = ", ".join(correct_answer)  
@@ -295,7 +310,7 @@ def main(args):
     logging.info('Finished wandb init.')
 
     # Get accuracy metric.
-    metric = get_metric('mc')
+    metric = get_metric('vqa')
     # Load dataset.
     train_dataset,validation_dataset,answerable_indices,unanswerable_indices = dataset_handler(args)
 
@@ -303,11 +318,13 @@ def main(args):
     # Create Few-Shot prompt.
     prompt_indices = random.sample(answerable_indices, args.num_few_shot)
     experiment_details['prompt_indices'] = prompt_indices
+    logging.info('prompt_indices: %s.', prompt_indices)
 
     remaining_answerable = list(set(answerable_indices) - set(prompt_indices))
 
     few_shot_info = few_shot(args, train_dataset, prompt_indices)
 
+    logging.info('few_shot_info: %s.', few_shot_info)
 
     # Initialize model.
     model = MLLMModel('llava-1.5-7b-hf','default',50);
