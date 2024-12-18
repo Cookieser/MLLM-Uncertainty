@@ -107,7 +107,7 @@ python semantic_uncertainty/generate_answers_mllm_plus.py --dataset=mmvp
 
 ✅ MLLM: Add MLLM
 
-✅MLLM: Finish the metric of the accuracy
+✅ MLLM: Finish the metric of the accuracy
 
 ✅ MLLM: Handle with MMVP dataset
 
@@ -119,30 +119,30 @@ python semantic_uncertainty/generate_answers_mllm_plus.py --dataset=mmvp
 
 ✅ MLLM: Finish MLLM  generation plus method through our transformed images
 
+✅ MLLM: Add VQA dataset
 
 
-## To do
 
-- README
-- polish the structure and encapsulate various components
-- add some dataset 
-- add some models
-- do many expriments
-- add some method: RepE
-
-## Ground Truth/confidence
-
-- Semantic Entropy
+## Confidence
+### Semantic Entropy
 https://arxiv.org/abs/2302.09664 https://www.nature.com/articles/s41586-024-07421-0
 
 Use the Semantic Entropy to measure the confidence of llm output
 
+Our Method 1: Using Transformation Sample instead of the temperature
+
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/f43d6c42-1bc1-4d82-9758-24b33b819b30" alt="image3" width="800" />
+</p>
 
 
 
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/987e84a6-f72c-4e77-8474-ce7368ed015a" alt="image3" width="400" />
+</p>
 
-
-
+12.18： It doesn't work well.
 
 
 
