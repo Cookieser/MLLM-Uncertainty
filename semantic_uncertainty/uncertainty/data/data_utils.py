@@ -11,7 +11,10 @@ mmvp_original_image_path = "/work/images/images/mmvp"
 mmvp_dataset_path = "semantic_uncertainty/uncertainty/data/Questions.csv" 
 
 VQA_dataset_path = "semantic_uncertainty/uncertainty/data/VQAv2_dataset.json"
-VQA_original_image_path = "/work/images/VQAv2/VQAv2_train2014"
+VQA_original_image_path = "/work/images/VQAv2/VQAv2_train2014_2000"
+VQA_image_path = "/work/images/VQAv2"
+
+
 
 
 def load_ds(dataset_name, seed, add_options=None):
@@ -113,7 +116,6 @@ def load_ds(dataset_name, seed, add_options=None):
         def transformed_images_address(idx,base_path):
         # Iterate through folders
             image_paths = []
-
             # Iterate through folders
             for folder in os.listdir(base_path):
                 folder_path = os.path.join(base_path, folder)
@@ -126,7 +128,7 @@ def load_ds(dataset_name, seed, add_options=None):
             # Print the total count
             return image_paths
 
-
+        
         
         dataset_dict = datasets.load_dataset('csv', data_files=mmvp_dataset_path)
         dataset = dataset_dict['train']
@@ -145,9 +147,25 @@ def load_ds(dataset_name, seed, add_options=None):
         validation_dataset = [reformat(d) for d in validation_dataset]
 
     elif dataset_name == 'vqa':
+
+        def transformed_images_address(idx,base_path):
+        # Iterate through folders
+            image_paths = []
+            # Iterate through folders
+            for folder in os.listdir(base_path):
+                folder_path = os.path.join(base_path, folder)
+                if os.path.isdir(folder_path):
+                    image_path = os.path.join(folder_path, f"COCO_train2014_{str(idx).zfill(12)}.png")
+                    if os.path.exists(image_path):
+
+                        image_paths.append(image_path)
+
+            # Print the total count
+            return image_paths
+
         dataset_dict = datasets.load_dataset("json", data_files=VQA_dataset_path)
         dataset = dataset_dict['train'] 
-        dataset = dataset.select(range(400))
+        dataset = dataset.select(range(2000))
         dataset = dataset.train_test_split(test_size=0.5, seed=42)
         train_dataset = dataset['train']
         validation_dataset = dataset['test']
@@ -156,9 +174,8 @@ def load_ds(dataset_name, seed, add_options=None):
             'id': x['question_id'],
             'question': x['question'],
             'answers': {'text': x['answers']},
-            'original_image':{'paths': os.path.join(VQA_original_image_path, f"COCO_train2014_{str(x['image_id']).zfill(12)}.jpg"),
-            #'transformed_images': {'paths': transformed_images_address(x['Index'],base_image_path)
-            },
+            'original_image':{'paths': os.path.join(VQA_original_image_path, f"COCO_train2014_{str(x['image_id']).zfill(12)}.jpg")},
+            'transformed_images': {'paths': transformed_images_address(x['image_id'],VQA_image_path)},
         }
 
         print("Processing training dataset...")
@@ -167,8 +184,6 @@ def load_ds(dataset_name, seed, add_options=None):
         print("Processing validation dataset...")
         validation_dataset = [reformat(d) for d in tqdm(validation_dataset, desc="Reformatting Validation Dataset")]
 
-        #train_dataset = [reformat(d) for d in train_dataset]
-        #validation_dataset = [reformat(d) for d in validation_dataset]
 
 
 

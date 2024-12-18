@@ -1,0 +1,29 @@
+method,metric,means
+Semantic entropy,accuracy_at_0.95_answer_fraction,0.6736842105263158
+Semantic entropy,accuracy_at_1.0_answer_fraction,0.64
+Semantic entropy,AUROC,0.8924696180555556
+Semantic entropy,area_under_thresholded_accuracy,0.8198491482458429
+Semantic entropy,mean_uncertainty,1.1695731853904403
+Semantic entropy,accuracy_at_0.8_answer_fraction,0.7625
+Semantic entropy,accuracy_at_0.9_answer_fraction,0.7
+Discrete Semantic Entropy,accuracy_at_0.8_answer_fraction,0.7625
+Discrete Semantic Entropy,accuracy_at_0.9_answer_fraction,0.7
+Discrete Semantic Entropy,accuracy_at_0.95_answer_fraction,0.6736842105263158
+Discrete Semantic Entropy,accuracy_at_1.0_answer_fraction,0.64
+Discrete Semantic Entropy,AUROC,0.8856336805555556
+Discrete Semantic Entropy,area_under_thresholded_accuracy,0.8153159993647995
+Discrete Semantic Entropy,mean_uncertainty,1.3053738914517787
+Naive Entropy,accuracy_at_0.8_answer_fraction,0.75
+Naive Entropy,accuracy_at_0.9_answer_fraction,0.7
+Naive Entropy,accuracy_at_0.95_answer_fraction,0.6736842105263158
+Naive Entropy,accuracy_at_1.0_answer_fraction,0.64
+Naive Entropy,AUROC,0.8098958333333333
+Naive Entropy,area_under_thresholded_accuracy,0.7701590660012478
+Naive Entropy,mean_uncertainty,0.22568943569161162
+p(True),accuracy_at_0.9_answer_fraction,0.6111111111111112
+p(True),accuracy_at_0.95_answer_fraction,0.631578947368421
+p(True),accuracy_at_1.0_answer_fraction,0.64
+p(True),AUROC,0.40852864583333337
+p(True),area_under_thresholded_accuracy,0.5678750153599965
+p(True),mean_uncertainty,1.1061782543361187
+p(True),accuracy_at_0.8_answer_fraction,0.58125

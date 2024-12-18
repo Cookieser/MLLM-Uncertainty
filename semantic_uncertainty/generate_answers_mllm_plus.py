@@ -68,8 +68,16 @@ def few_shot(args, train_dataset, prompt_indices):
         image = Image.open(image_path).convert("RGB")
         prompt["images"].append(image)
         prompt["questions"].append(train_dataset[idx]["question"])
-        prompt["answers"].append(train_dataset[idx]["answers"]['text'])
-        prompt['options'].append(train_dataset[idx]["options"])
+
+        answer_data = train_dataset[idx]["answers"]['text']
+        if isinstance(answer_data, list) and len(answer_data) > 0:
+            selected_answer = random.choice(answer_data)
+        else:
+            selected_answer = answer_data
+        
+        prompt["answers"].append(selected_answer)
+        if (args.use_mc_options):
+            prompt['options'].append(train_dataset[idx]["options"])
     
     return prompt
 
@@ -85,7 +93,11 @@ def p_true(model,dataset,indices,prompt_info,num_generations,metric):
         image_file = example["original_image"]['paths']
         image = Image.open(image_file).convert("RGB")
         images.append(image)
-        options = example["options"]
+        if (args.use_mc_options):
+            options = example["options"]
+        else:
+            options = []
+
 
         transformed_image_path_list = example['transformed_images']['paths']
         nums_len_transformed_image = len(transformed_image_path_list)
@@ -209,7 +221,10 @@ def generation(args,dataset,dataset_split,indices,prompt_info,model,metric,accur
         image = Image.open(image_file).convert("RGB")
         transformed_image_path_list = example['transformed_images']['paths']
         nums_len_transformed_image = len(transformed_image_path_list)
-        options = example["options"]
+        if (args.use_mc_options):
+            options = example["options"]
+        else:
+            options = []
         correct_answer =example['answers']['text']
         if isinstance(correct_answer, list):
                 correct_answer = ", ".join(correct_answer)  
@@ -321,7 +336,7 @@ def main(args):
     logging.info('Finished wandb init.')
 
     # Get accuracy metric.
-    metric = get_metric('mc')
+    metric = get_metric('vqa')
     # Load dataset.
     train_dataset,validation_dataset,answerable_indices,unanswerable_indices = dataset_handler(args)
 
