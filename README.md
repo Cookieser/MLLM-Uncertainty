@@ -91,37 +91,6 @@ python semantic_uncertainty/generate_answers_mllm_plus.py --dataset=mmvp
 
 
 
-## Completed Tasks
-
-✅ Framework setup.
-
-✅ LLM: Dataset module.
-
-✅ LLM: Prompt engineering (few-shot methods).
-
-✅ LLM: Model integration.
-
-✅ LLM: Model answer generation.
-
-✅ LLM: Overall `p_true` methodology, including few-shot design for `p_true`.
-
-✅ MLLM: Add MLLM
-
-✅ MLLM: Finish the metric of the accuracy
-
-✅ MLLM: Handle with MMVP dataset
-
-✅ MLLM: Finish MLLM few-shot 
-
-✅ MLLM: Finish MLLM  `p_true` method, including few-shot design for `p_true`.
-
-✅ MLLM: Finish MLLM  generation method
-
-✅ MLLM: Finish MLLM  generation plus method through our transformed images
-
-✅ MLLM: Add VQA dataset
-
-
 
 ## Confidence
 ### Semantic Entropy
@@ -129,7 +98,7 @@ https://arxiv.org/abs/2302.09664 https://www.nature.com/articles/s41586-024-0742
 
 Use the Semantic Entropy to measure the confidence of llm output
 
-Our Method 1: Using Transformation Sample instead of the temperature
+Our Method: Using Transformation Sample instead of the temperature
 
 
 <p align="center">
@@ -143,6 +112,12 @@ Our Method 1: Using Transformation Sample instead of the temperature
 </p>
 
 12.18： It doesn't work well.
+
+2025.1: We found that a very similar piece of work had already been completed, and therefore we decided to abandon our attempt.
+
+[VL-Uncertainty: Detecting Hallucination in Large Vision-Language Model via Uncertainty Estimation](https://arxiv.org/pdf/2411.11919)
+
+
 
 
 
